@@ -26,17 +26,33 @@ const showImages = (images) => {
     gallery.appendChild(div);
   });
   loadingVisibility();
+  
 };
 
-const getImages = (query) => {
-  loadingVisibility();
-  fetch(
-    `https://pixabay.com/api/?key=${KEY}=${query}&image_type=photo&pretty=true`
-  )
-    .then((response) => response.json())
-    .then((data) => showImages(data.hits))
-    .catch((err) => console.log(err));
+
+ const getImages = (query) => {
+   loadingVisibility();
+   fetch(
+      `https://pixabay.com/api/?key=${KEY}=${query}&image_type=photo&pretty=true`
+    )
+      .then((response) => response.json())
+
+     .then((data) => {
+      if (data.total === 0) {
+    const showError = document.getElementById("show-error");
+    let error = "";
+    error = `<h2 class="error-part">Sorry! We didn't find any picture... <br> Please enter meaningful name what you are looking for... </h2> `;
+    showError.innerHTML = error;
+  } else {
+    showImages(data.hits);
+  }
+})
+
+   .catch((err) => console.log(err));
 };
+
+
+
 
 let slideIndex = 0;
 const selectItem = (event, img) => {
@@ -128,14 +144,19 @@ searchInput.addEventListener("keyup", (e) => {
   if (e.key === "Enter") {
     searchBtn.click();
   }
+
 });
 
 searchBtn.addEventListener("click", function () {
+
+  
   document.querySelector(".main").style.display = "none";
   clearInterval(timer);
   const search = document.getElementById("search");
   getImages(search.value);
   sliders.length = 0;
+  
+
 });
 
 sliderBtn.addEventListener("click", function () {
@@ -155,7 +176,7 @@ const showError = (text) => {
   }, 2500);
 };
 
-function loadingVisibility(visible) {
+ function loadingVisibility(visible) {
   const spinner = document.getElementById("loading");
   spinner.classList.toggle("d-none");
 }
@@ -166,3 +187,7 @@ const validateData = (e) => {
     showError(`${data} will be converted into ${Math.abs(data)} seconds`);
   }
 };
+
+
+
+
